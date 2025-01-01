@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const cloudinary = require("./cloudinaryConfig");
 // we need the fs
 const fs = require("fs");
-const path = require("path");
 
 const roomsSchema = new mongoose.Schema({
   image: {
