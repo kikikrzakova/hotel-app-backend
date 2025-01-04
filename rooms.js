@@ -15,7 +15,7 @@ const roomsSchema = new mongoose.Schema({
 });
 
 const Room = mongoose.model("Room", roomsSchema);
-
+console.log("Room in rooms:", Room)
 async function getAllRooms(req, res) {
   try {
     const rooms = await Room.find();
@@ -114,4 +114,6 @@ async function deleteRoom(req, res) {
     });
   }
 }
-module.exports = { getAllRooms, createRoom, updateRoom, deleteRoom };
+
+module.exports = { getAllRooms, createRoom, updateRoom, deleteRoom, Room };
+

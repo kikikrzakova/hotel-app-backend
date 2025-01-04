@@ -103,3 +103,4 @@ exports.getBooking = getBooking;
 exports.createBooking = createBooking;
 exports.updateBooking = updateBooking;
 exports.deleteBooking = deleteBooking;
+exports.Booking = Booking;

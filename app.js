@@ -12,9 +12,10 @@ const {
   createBooking,
   updateBooking,
   deleteBooking,
+  Booking
 } = require("./bookings");
-const { getAllRooms, createRoom } = require("./rooms");
-const { updateRoom, deleteRoom } = require("./rooms");
+const { getAllRooms, createRoom, updateRoom, deleteRoom, Room } = require("./rooms");
+
 
 const bookingRouter = express.Router();
 const roomRouter = express.Router();
@@ -44,6 +45,7 @@ app.use("/rooms", roomRouter);
 
 app.get("/booking/", async (req, res) => {
   const { startDate, endDate, guests } = req.query;
+  console.log(startDate, endDate, guests);
   try {
     const query = {
       $and: [
@@ -51,19 +53,26 @@ app.get("/booking/", async (req, res) => {
         { checkOut: { $gte: new Date(startDate).toISOString() } },
       ],
     };
-
-    const bookedRooms = await Booking.find(query);
-    console.log(bookedRooms, endDate, startDate, query);
-    const bookedRoomNumbers = [
-      ...new Set(bookedRooms.map((booking) => booking.room)),
+    const overlappingBookings = await Booking.find(query);
+    // find bookings where the booked dates overlap with the required dates
+    const bookedRooms = [
+      ...new Set(overlappingBookings.map((booking) => booking.room)),
     ];
+    console.log("booked rooms: ", bookedRooms, `${bookedRooms ? typeof bookedRooms[0]: ""}`)
+    console.log("Room: ", Room)
+    // find all rooms that are not booked during the required dates
+    const availableRooms = await Room.find(
+      {number : {$nin: [...bookedRooms]}}
+    )
+    console.log(overlappingBookings, bookedRooms,availableRooms);
 
-    res.status(200).json({ status: "success", data: { bookedRoomNumbers } });
+    res.status(200).json({ status: "success", data: { bookedRooms } });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
   }
 });
+
 
 const PORT = 3000;
 app.listen(PORT, () => {
