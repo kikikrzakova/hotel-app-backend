@@ -65,9 +65,9 @@ app.get("/booking/", async (req, res) => {
     const availableRooms = await Room.find(
       {number : {$nin: [...bookedRooms]}}
     )
-    console.log(overlappingBookings, bookedRooms,availableRooms);
+    console.log(availableRooms);
 
-    res.status(200).json({ status: "success", data: { bookedRooms } });
+    res.status(200).json({ status: "success", data: { availableRooms } });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
