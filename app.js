@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 // allows us to fetch data from react app
 const cors = require("cors");
 const multer = require("multer");
+// allows us to upload files, the files sent from react app are stored in the /uploads folder, if we don't use this middleware, the server will not be able to handle the file
 const upload = multer({ dest: "uploads/" });
 
 const {
