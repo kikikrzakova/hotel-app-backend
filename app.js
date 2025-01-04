@@ -76,7 +76,9 @@ app.get("/booking/", async (req, res) => {
     // find all single rooms that satisfy the required capacity and are available
     const availableSingleRooms = availableRooms.filter((room) => room.capacity >= guests)
   
-    if (availableSingleRooms){
+    
+    // if there are single available rooms that can fit the required number of guests, we'll find a room with min capacity
+    if (availableSingleRooms.length > 0){
       const bestRoom = availableSingleRooms.reduce((minRoom, room)=> {
         if (room.capacity < minRoom.capacity){
           console.log(room)
@@ -85,27 +87,31 @@ app.get("/booking/", async (req, res) => {
       }, availableSingleRooms[0])
       return res.status(200).json({ status: "success", data: { bestRoom } });
     }
-    // if (!availableSingleRooms) {
-    //   const sortedAvailableRooms = availableRooms.sort((roomA,roomB)=>roomB.capacity - roomA.capacity);
-    //   let totalCapacity = 0;
-    //   roomCombination = []
-    //   for (const room of sortedAvailableRooms) {
-    //     if (totalCapacity >= guests){
-    //       break;
-    //     }
-    //     totalCapacity += room.capacity;
-    //     roomCombination.push(room)
-    //   }
-    //   if (totalCapacity < guests ){
-    //     return res.status(204).json({
-    //       status: "fail",
-    //       message: "Not enough capacity for the number of guests",
-    //     })
-      
-    //   }
-    // }
+    console.log("seems to be working fine until here")
+
+    // if there are no single available rooms that can fit the required number of guests, we'll find a combination of rooms that can fit the required number of guests
+    // sort the available rooms in ascending order to find a combination with min capacity
+    const sortedAvailableRooms = availableRooms.sort((roomA,roomB)=>roomA.capacity - roomB.capacity);
+    let totalCapacity = 0;
+    const roomCombination = [];
+    for (const room of sortedAvailableRooms) {
+      totalCapacity += room.capacity;
+      console.log(room);
+      roomCombination.push(room);
+      if (totalCapacity >= guests){
+        break;
+      }
+    }
+    if (totalCapacity < guests ){
+      return res.status(204).json({
+        status: "fail",
+        message: "Not enough capacity for the number of guests",
+      })
     
-    res.status(200).json({ status: "success", data: { availableSingleRooms } });
+    } 
+    return res.status(200).json({ status: "success", data: { roomCombination } });
+    
+    
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
