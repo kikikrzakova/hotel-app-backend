@@ -20,11 +20,19 @@ const { updateRoom, deleteRoom } = require("./rooms");
 const bookingRouter = express.Router();
 const roomRouter = express.Router();
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 dotenv.config({ path: "./config.env" });
 const DB = process.env.DATABASE.replace("<db_password>", process.env.PASSWORD);
-mongoose.connect(DB).then(console.log("Connection successful"));
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then(console.log("Connection successful"));
 // console.log(process.env);
 
 bookingRouter.route("/").get(getAllBookings).post(createBooking);
@@ -47,7 +55,10 @@ app.get("/booking/", async (req, res) => {
   const { startDate, endDate, guests } = req.query;
   try {
     const query = {
+      // $and is used to filter documents that match all conditions in the specified array.
       $and: [
+        // checkIn and checkOut are stored in ISO String format, so we convert endDate and startDate to strings before comparing.
+        // we want to find rooms that are booked between the given dates and for the specified number of guests
         { checkIn: { $lte: new Date(endDate).toISOString() } },
         { checkOut: { $gte: new Date(startDate).toISOString() } },
       ],
@@ -55,6 +66,7 @@ app.get("/booking/", async (req, res) => {
 
     const bookedRooms = await Booking.find(query);
     console.log(bookedRooms, endDate, startDate, query);
+    // get a set of rooms that are booked between the given dates
     const bookedRoomNumbers = [
       ...new Set(bookedRooms.map((booking) => booking.room)),
     ];
@@ -66,6 +78,7 @@ app.get("/booking/", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log("Listening on port 3000");
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
 });
