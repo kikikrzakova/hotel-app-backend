@@ -25,14 +25,7 @@ app.use(cors());
 app.use(express.json());
 dotenv.config({ path: "./config.env" });
 const DB = process.env.DATABASE.replace("<db_password>", process.env.PASSWORD);
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
-  .then(console.log("Connection successful"));
+mongoose.connect(DB).then(console.log("Connection successful"));
 // console.log(process.env);
 
 bookingRouter.route("/").get(getAllBookings).post(createBooking);
