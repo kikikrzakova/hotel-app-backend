@@ -13,9 +13,16 @@ const {
   createBooking,
   updateBooking,
   deleteBooking,
+  getAvailableBookings,
+  Booking,
 } = require("./bookings");
-const { getAllRooms, createRoom } = require("./rooms");
-const { updateRoom, deleteRoom } = require("./rooms");
+const {
+  getAllRooms,
+  createRoom,
+  updateRoom,
+  deleteRoom,
+  Room,
+} = require("./rooms");
 
 const bookingRouter = express.Router();
 const roomRouter = express.Router();
@@ -44,32 +51,9 @@ roomRouter
 app.use("/bookings", bookingRouter);
 app.use("/rooms", roomRouter);
 
-app.get("/booking/", async (req, res) => {
-  const { startDate, endDate, guests } = req.query;
-  try {
-    const query = {
-      // $and is used to filter documents that match all conditions in the specified array.
-      $and: [
-        // checkIn and checkOut are stored in ISO String format, so we convert endDate and startDate to strings before comparing.
-        // we want to find rooms that are booked between the given dates and for the specified number of guests
-        { checkIn: { $lte: new Date(endDate).toISOString() } },
-        { checkOut: { $gte: new Date(startDate).toISOString() } },
-      ],
-    };
+// app.get("/booking/", getAvailableBookings);
 
-    const bookedRooms = await Booking.find(query);
-    console.log(bookedRooms, endDate, startDate, query);
-    // get a set of rooms that are booked between the given dates
-    const bookedRoomNumbers = [
-      ...new Set(bookedRooms.map((booking) => booking.room)),
-    ];
-
-    res.status(200).json({ status: "success", data: { bookedRoomNumbers } });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
-  }
-});
+app.route("/booking").get(getAvailableBookings);
 
 const PORT = 3000;
 app.listen(PORT, () => {
