@@ -1,4 +1,4 @@
-# Backend - Hotel App API
+# Backend - Hotel Manager API
 
 This is the backend for the Hotel web app.
 
