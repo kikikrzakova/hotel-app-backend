@@ -1,3 +1,7 @@
+⚠️ Important Notes:
+This database is read-only – you cannot modify, delete, or add new data.
+It is intended only for DEMO purposes.
+
 # Backend - Hotel Manager API
 
 This is the backend for the Hotel Manager web app.
