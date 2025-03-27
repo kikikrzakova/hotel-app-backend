@@ -24,8 +24,11 @@ const {
   Room,
 } = require("./rooms");
 
+const { verifyUser, User, changePassword } = require("./users.js");
+
 const bookingRouter = express.Router();
 const roomRouter = express.Router();
+const userRouter = express.Router();
 const app = express();
 
 app.use(cors());
@@ -48,8 +51,12 @@ roomRouter
   .patch(upload.single("image"), updateRoom)
   .delete(deleteRoom);
 
+userRouter.route("/").post(verifyUser);
+userRouter.route("/:id").patch(changePassword);
+
 app.use("/bookings", bookingRouter);
 app.use("/rooms", roomRouter);
+app.use("/users", userRouter);
 
 // app.get("/booking/", getAvailableBookings);
 
